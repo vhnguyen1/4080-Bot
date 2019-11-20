@@ -1,1 +1,1 @@
-worker: node Bot.js
+worker: node Waifu.js

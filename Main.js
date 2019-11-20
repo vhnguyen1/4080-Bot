@@ -18,7 +18,9 @@ const COMMAND_COOLDOWN_ERROR_MESSAGE = "You have recently used a command, please
 
 "use strict";
 
-CLIENT.login("NjQ2Nzg4Nzc3MDE2MDMzMzIx.XdWPqg.wNwfI9683vQtbbSoCa6ofWIpaFQ");
+CLIENT.login("NjQ2Nzg4Nzc3MDE2MDMzMzIx.XdWqEQ.4kiDPGGKy2KDty6d6nPg62ZoBp4").catch(e => {
+    BOT.error(e);
+});
 
 CLIENT.on("any", function (event) {});
 
@@ -34,7 +36,7 @@ CLIENT.on("guildMemberAdd", (member) => {});
 
 CLIENT.on("guildMemberRemove", (member) => {});
 
-CLIENT.on("message", async message => {
+CLIENT.on("message", message => {
     const authorID = message.author.id;
     const messageContents = message.content;
     BOT.log(messageContents);
