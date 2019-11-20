@@ -9,7 +9,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "start": "node Waifu.js"
+    "start": "node Bot.js"
   },
   "repository": {
     "type": "git",
