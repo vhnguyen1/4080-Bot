@@ -18,7 +18,7 @@ const COMMAND_COOLDOWN_ERROR_MESSAGE = "You have recently used a command, please
 
 "use strict";
 
-CLIENT.login("NjQ2Nzg4Nzc3MDE2MDMzMzIx.XdWr9w.OmHldnAVKFL46aoQ2Z5EmZCZ1QU").catch(e => {
+CLIENT.login("NjQ2Nzg4Nzc3MDE2MDMzMzIx.XdWtMg.smriRGVAfJfW9SnDikevffX8Xhk").catch(e => {
     BOT.error(e);
 });
 
