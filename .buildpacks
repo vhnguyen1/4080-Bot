@@ -1,0 +1,5 @@
+https://github.com/mcollina/heroku-buildpack-graphicsmagick.git
+https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest.git
+https://github.com/heroku/heroku-buildpack-apt
+https://github.com/heroku/heroku-buildpack-jvm-common.git
+https://github.com/heroku/java-getting-started
