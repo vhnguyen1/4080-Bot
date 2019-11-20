@@ -17,7 +17,7 @@ const Bot = (function () {
         this.mSecret = "xJUZ5frcvsEdGE2rquM6ynVjQzKYIXt0";
 
         this.mPrefix = "!";
-        this.mToken = "NjQ2Nzg4Nzc3MDE2MDMzMzIx.XdWPqg.wNwfI9683vQtbbSoCa6ofWIpaFQ";
+        this.mToken = "NjQ2Nzg4Nzc3MDE2MDMzMzIx.XdWrlg.29yLi3qVKFmwsxlIrlN_OsJp1rA";
 
         this.mClient = new DISCORD.Client({
             autoReconnect: true,
