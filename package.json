@@ -2,14 +2,14 @@
   "name": "bot",
   "version": "1.0.0",
   "description": "4080 Project",
-  "main": "Bot.js",
+  "main": "Main.js",
   "dependencies": {
     "discord.js": "^11.5.1",
     "winston": "^2.4.4"
   },
   "devDependencies": {},
   "scripts": {
-    "start": "node Bot.js"
+    "start": "node Main.js"
   },
   "repository": {
     "type": "git",
