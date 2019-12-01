@@ -12,7 +12,7 @@ const BOT = require("./Bot.js").getInstance();
 const CLIENT = BOT.getClient();
 
 const RECENT_USERS = new Set(); // For command cooldowns.
-const COMMAND_COOLDOWN = 2000;
+const COMMAND_COOLDOWN = 1000; //  One second cooldown
 const COMMAND_COOLDOWN_ERROR_MESSAGE = "You have recently used a command, please try again later (cooldown per command is: " +
     (COMMAND_COOLDOWN / 1000) + " seconds).";
 
