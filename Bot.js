@@ -14,20 +14,29 @@ const CONFIG_LOCATION = "./config/";
 
 const Bot = (function () {
     let instance; // The singleton instance of Bot. Only 1 may exist at a time.
+    let isLocal = true;
 
     try {
         var settings = require(`${CONFIG_LOCATION}settings.json`);
     } catch (e) {
         console.error(`${MISSING_SETTINGS} ${e}`);
+        isLocal = false;
     }
 
     function init() {
         this.mName = "Bot";
         this.mAvatarUrl = "https://cdn.discordapp.com/attachments/475077159094976516/650999293733371917/585205879.jpg";
         this.mPrefix = "!";
-        this.mToken = settings.token;
-        this.mID = settings.client_id;
-        this.mSecret = settings.client_secret;
+
+        if (isLocal) {
+            this.mToken = settings.token;
+            this.mID = settings.client_id;
+            this.mSecret = settings.client_secret;
+        } else {
+            this.mToken = process.env.BOT_TOKEN;
+            this.mID = process.env.CLIENT_ID;
+            this.mSecret = process.env.CLIENT_SECRET;
+        }
 
         this.mClient = new DISCORD.Client({
             autoReconnect: true,
