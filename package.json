@@ -5,6 +5,7 @@
   "main": "Main.js",
   "dependencies": {
     "discord.js": "^11.5.1",
+    "valid-url": "^1.0.9",
     "winston": "^2.4.4"
   },
   "devDependencies": {},
