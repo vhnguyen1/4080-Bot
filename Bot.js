@@ -7,21 +7,27 @@
 const DISCORD = require("discord.js");
 const LOGGER_LEVEL = "debug";
 
+const MISSING_SETTINGS = "Settings file is missing!";
 const CONFIG_LOCATION = "./config/";
-const SETTINGS = require(`${CONFIG_LOCATION}settings.json`);
 
 "use strict";
 
 const Bot = (function () {
     let instance; // The singleton instance of Bot. Only 1 may exist at a time.
 
+    try {
+        var settings = require(`${CONFIG_LOCATION}settings.json`);
+    } catch (e) {
+        console.error(`${MISSING_SETTINGS} ${e}`);
+    }
+
     function init() {
-        this.mName = SETTINGS.name;
-        this.mAvatarUrl = SETTINGS.avatar_url;
-        this.mPrefix = SETTINGS.prefix;
-        this.mToken = SETTINGS.token;
-        this.mID = SETTINGS.client_id;
-        this.mSecret = SETTINGS.client_secret;
+        this.mName = "Bot";
+        this.mAvatarUrl = "https://cdn.discordapp.com/attachments/475077159094976516/650999293733371917/585205879.jpg";
+        this.mPrefix = "!";
+        this.mToken = settings.token;
+        this.mID = settings.client_id;
+        this.mSecret = settings.client_secret;
 
         this.mClient = new DISCORD.Client({
             autoReconnect: true,

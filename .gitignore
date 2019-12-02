@@ -1,4 +1,5 @@
-config/
+config/api_keys.json
+config/settings.json
 node_modules/
 
 # Logs
