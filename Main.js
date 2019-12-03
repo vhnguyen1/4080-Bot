@@ -52,12 +52,14 @@ CLIENT.on("guildMemberRemove", (member) => {
     member.send(`You have left **${member.guild.name}**!`);
 });
 
-CLIENT.on("message", message => {
+CLIENT.on("message", async (message) => {
     try {
         const authorID = message.author.id;
         const messageContents = message.content;
 
         if (!messageContents.startsWith(BOT.getPrefix()))
+            return;
+        if (isBot(oldMessage))
             return;
 
         message.channel.startTyping();
@@ -89,6 +91,7 @@ CLIENT.on("message", message => {
 CLIENT.on("ready", () => {
     BOT.log("Starting up...");
     BOT.setActivity("with Node.js!");
+    BOT.setLogChannel(CLIENT.channels.get("651286630497517581"));
     BOT.log("Ready to go!\n");
 });
 
@@ -100,14 +103,56 @@ CLIENT.on("warn", (notice) => {
     BOT.warn(notice);
 });
 
-process.on("uncaughtException", function (e) {
-
-});
-
-process.on("unhandledRejection", (reason) => {
-
-});
-
 function logChat(message) {
     BOT.log(`${BOT.getExactMoment(new Date())} → ${message.author.username}: ${message.content}`);
 }
+
+function isBot(message) {
+    return message.author.bot;
+}
+
+CLIENT.on('messageDelete', async (message) => {
+    if (isBot(message))
+        return;
+
+    console.log(`Message: "${message.cleanContent}" was deleted from channel: ${message.channel.name} at ${new Date()}`);
+
+    BOT.createEmbedFromMessage(message,
+        BOT.getLogChannel(),
+        `Message Deleted: ${message.id}`,
+        `${message.member.user.tag}`,
+        message.author.avatarURL,
+        null,
+        "https://discordapp.com/",
+        `<@${message.author.id}>'s message from <#${message.channel.id}> was deleted:\n${message.cleanContent}`,
+        null,
+        message.author.avatarURL,
+        null,
+        null,
+        null,
+        null);
+});
+
+CLIENT.on('messageUpdate', async (oldMessage, newMessage) => {
+    if (isBot(oldMessage))
+        return;
+
+    BOT.createEmbedFromMessage(oldMessage,
+        BOT.getLogChannel(),
+        `Message Edited: ${oldMessage.id}`,
+        `${oldMessage.member.user.tag}`,
+        oldMessage.author.avatarURL,
+        null,
+        "https://discordapp.com/",
+        `<@${oldMessage.author.id}>'s message in <#${oldMessage.channel.id}> was changed **\n\nFrom:**\n${oldMessage.cleanContent}\n\n**To:**\n${newMessage.content}`,
+        null,
+        oldMessage.author.avatarURL,
+        null,
+        null,
+        null,
+        null);
+});
+
+CLIENT.on('memberRoleUpdate', async (member) => {
+    
+});

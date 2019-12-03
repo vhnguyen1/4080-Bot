@@ -52,6 +52,8 @@ const Bot = (function () {
             colorize: true
         });
 
+        this.mLogChannel = null;
+
         // Private helper method
         function addLeadingZero(number) {
             let numberString = number.toString();
@@ -75,11 +77,21 @@ const Bot = (function () {
             return str.replace(/\s/g, '');
         }
 
+        function formatEmbedDescription(description) {
+            const finalDescription = ((description.length > DEFAULT_EMBED_DESCRIPTION_LENGTH) ? description.substr(0, DEFAULT_EMBED_DESCRIPTION_LENGTH - 1) +
+                "..." : description);
+            return finalDescription.replace(/<[^>]*>/g, "");
+        }
+
         return {
             online: "online",
             away: "idle",
             busy: "dnd",
             invisible: "invisible",
+            purple_hex: "#a504db",
+            DEFAULT_EMBED_FOOTER_MESSAGE: "This is an automated message.",
+            DEFAULT_EMBED_FOOTER_IMAGE: "https://i.imgur.com/bZrkV3Y.jpg",
+            DEFAULT_EMBED_DESCRIPTION_LENGTH: 750,
             debug: function (message) {
                 mLogger.debug(message).catch(e => message.channel.send(`${e}.`));
             },
@@ -126,6 +138,9 @@ const Bot = (function () {
             setStatus: function (status) {
                 mClient.user.setStatus(status);
             },
+            setLogChannel: function (newLogChannel) {
+                return mLogChannel = newLogChannel;
+            },
             getClient: function () {
                 return mClient;
             },
@@ -140,6 +155,9 @@ const Bot = (function () {
             },
             getToken: function () {
                 return mToken;
+            },
+            getLogChannel: function () {
+                return mLogChannel;
             },
             getCurrentDate: function (currentDate) {
                 const date = [addLeadingZero((currentDate.getMonth() + 1))];
@@ -165,6 +183,76 @@ const Bot = (function () {
             },
             getExactMoment: function (currentDate) {
                 return `${this.getCurrentDate(currentDate)} [${this.getCurrentTime(currentDate)}]`;
+            },
+            createEmbedFromMessage: function (message,
+                channel,
+                title,
+                author,
+                author_thumbnail,
+                thumbnail,
+                url,
+                description,
+                footer,
+                footer_image_url,
+                embed_image,
+                color,
+                embed_fields_top,
+                embed_fields_bottom) {
+                const embed = new DISCORD.RichEmbed().setTimestamp();
+
+                if (title)
+                    embed.setTitle(title);
+
+                if (author && author_thumbnail)
+                    embed.setAuthor(author, author_thumbnail);
+                else if (author)
+                    embed.setAuthor(author, this.getAvatarURL());
+                else
+                    embed.setAuthor(this.getName(), this.getAvatarURL());
+
+                if (thumbnail)
+                    embed.setThumbnail(thumbnail);
+                else
+                    embed.setThumbnail(message.guild.icon_url);
+
+                if (url)
+                    embed.setURL(url);
+
+                if (description)
+                    embed.setDescription(description);
+
+                if (footer)
+                    embed.setFooter(footer, footer_image_url);
+                else if (!footer_image_url)
+                    embed.setFooter(this.DEFAULT_EMBED_FOOTER_MESSAGE, footer_image_url);
+                else
+                    embed.setFooter(this.DEFAULT_EMBED_FOOTER_MESSAGE, this.DEFAULT_EMBED_FOOTER_IMAGE);
+
+                if (embed_image)
+                    embed.setImage(embed_image);
+
+                if (color)
+                    embed.setColor(color);
+                else
+                    embed.setColor(this.purple_hex);
+
+                if (embed_fields_top && embed_fields_bottom) {
+                    const fieldsLength = embed_fields_top.length;
+
+                    if (fieldsLength != embed_fields_bottom.length)
+                        this.error("Fields Top and Bottom lengths are unequal.");
+                    else
+                        for (let i = 0; i < fieldsLength; i++)
+                            embed.addField(embed_fields_top[i], embed_fields_bottom[i], true);
+                }
+
+                if (channel)
+                    channel.send(embed);
+                else
+                    message.channel.send(embed);
+
+                this.info("Embed message sent.");
+                return embed;
             }
         };
     };
