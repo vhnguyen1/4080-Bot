@@ -153,6 +153,6 @@ CLIENT.on('messageUpdate', async (oldMessage, newMessage) => {
         null);
 });
 
-CLIENT.on('memberRoleUpdate', async (member) => {
-    
+CLIENT.on('guildMemberUpdate', async (oldMember, newMember) => {
+    BOT.getLogChannel().send("Role updated from " + oldMember.user.id + " to " + newMember.user.id);
 });
