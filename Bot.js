@@ -10,6 +10,11 @@ const LOGGER_LEVEL = "debug";
 const MISSING_SETTINGS = "Settings file is missing!";
 const CONFIG_LOCATION = "./config/";
 
+const DEFAULT_EMBED_FOOTER_MESSAGE = "This is an automated message.";
+const DEFAULT_EMBED_FOOTER_IMAGE = "https://i.imgur.com/bZrkV3Y.jpg";
+const DEFAULT_EMBED_DESCRIPTION_LENGTH = 750;
+const DEFAULT_EMBED_LINK = "https://discord.gg/wWxCsEP";
+
 "use strict";
 
 const Bot = (function () {
@@ -89,9 +94,6 @@ const Bot = (function () {
             busy: "dnd",
             invisible: "invisible",
             purple_hex: "#a504db",
-            DEFAULT_EMBED_FOOTER_MESSAGE: "This is an automated message.",
-            DEFAULT_EMBED_FOOTER_IMAGE: "https://i.imgur.com/bZrkV3Y.jpg",
-            DEFAULT_EMBED_DESCRIPTION_LENGTH: 750,
             debug: function (message) {
                 mLogger.debug(message).catch(e => message.channel.send(`${e}.`));
             },
@@ -210,13 +212,8 @@ const Bot = (function () {
                 else
                     embed.setAuthor(this.getName(), this.getAvatarURL());
 
-                if (thumbnail)
-                    embed.setThumbnail(thumbnail);
-                else
-                    embed.setThumbnail(message.guild.icon_url);
-
-                if (url)
-                    embed.setURL(url);
+                embed.setThumbnail((thumbnail) ? thumbnail : message.guild.icon_url);
+                embed.setURL((url)? url : DEFAULT_EMBED_LINK);
 
                 if (description)
                     embed.setDescription(description);
@@ -224,9 +221,9 @@ const Bot = (function () {
                 if (footer)
                     embed.setFooter(footer, footer_image_url);
                 else if (!footer_image_url)
-                    embed.setFooter(this.DEFAULT_EMBED_FOOTER_MESSAGE, footer_image_url);
+                    embed.setFooter(DEFAULT_EMBED_FOOTER_MESSAGE, footer_image_url);
                 else
-                    embed.setFooter(this.DEFAULT_EMBED_FOOTER_MESSAGE, this.DEFAULT_EMBED_FOOTER_IMAGE);
+                    embed.setFooter(DEFAULT_EMBED_FOOTER_MESSAGE, DEFAULT_EMBED_FOOTER_IMAGE);
 
                 if (embed_image)
                     embed.setImage(embed_image);

@@ -95,10 +95,6 @@ CLIENT.on("ready", () => {
     BOT.log("Ready to go!\n");
 });
 
-CLIENT.on("voiceStateUpdate", (oldMember, newMember) => {
-
-});
-
 CLIENT.on("warn", (notice) => {
     BOT.warn(notice);
 });
@@ -110,6 +106,16 @@ function logChat(message) {
 function isBot(message) {
     return message.author.bot;
 }
+
+CLIENT.on("voiceStateUpdate", (oldState, newState) => {
+    if (oldState.voiceChannel != newState.voiceChannel) {
+        if (newState.voiceChannel) {
+
+        } else {
+            
+        }
+    }
+});
 
 CLIENT.on('messageDelete', async (message) => {
     if (isBot(message))
@@ -123,7 +129,7 @@ CLIENT.on('messageDelete', async (message) => {
         `${message.member.user.tag}`,
         message.author.avatarURL,
         null,
-        "https://discordapp.com/",
+        null,
         `<@${message.author.id}>'s message from <#${message.channel.id}> was deleted:\n${message.cleanContent}`,
         null,
         message.author.avatarURL,
@@ -143,7 +149,7 @@ CLIENT.on('messageUpdate', async (oldMessage, newMessage) => {
         `${oldMessage.member.user.tag}`,
         oldMessage.author.avatarURL,
         null,
-        "https://discordapp.com/",
+        null,
         `<@${oldMessage.author.id}>'s message in <#${oldMessage.channel.id}> was changed **\n\nFrom:**\n${oldMessage.cleanContent}\n\n**To:**\n${newMessage.content}`,
         null,
         oldMessage.author.avatarURL,
@@ -153,6 +159,65 @@ CLIENT.on('messageUpdate', async (oldMessage, newMessage) => {
         null);
 });
 
-CLIENT.on('guildMemberUpdate', async (oldMember, newMember) => {
-    BOT.getLogChannel().send("Role updated from " + oldMember.user.id + " to " + newMember.user.id);
+CLIENT.on('guildMemberUpdate', async (member, updatedMember) => {
+    const oldRoles = member.roles.array();
+    const newRoles = updatedMember.roles.array();
+
+    let roleText = `<@${member.user.id}>`;
+    let roles;
+
+    if (oldRoles.length < newRoles.length) {
+        roles = newRoles.filter(r => !oldRoles.includes(r));
+        roleText += ` was given the ${roles.toString()} role.`;
+    } else {
+        roles = oldRoles.filter(r => !newRoles.includes(r));
+        roleText += `'s ${roles.toString()} role was removed.`;
+    }
+
+    BOT.createEmbedFromMessage(member,
+        BOT.getLogChannel(),
+        `User Role Updated: ${member.user.id}`,
+        `${member.user.tag}`,
+        member.user.avatarURL,
+        null,
+        null,
+        roleText,
+        null,
+        member.user.avatarURL,
+        null,
+        null,
+        null,
+        null);
+});
+
+CLIENT.on("roleCreate", function (role) {
+    BOT.createEmbedFromMessage(role,
+        BOT.getLogChannel(),
+        `Role List Updated: ${role.id}`,
+        `New Role Created`,
+        null,
+        null,
+        null,
+        `New Role Created: ${role}`,
+        null,
+        null,
+        null,
+        null,
+        null);
+});
+
+CLIENT.on("roleDelete", function (role) {
+    BOT.createEmbedFromMessage(role,
+        BOT.getLogChannel(),
+        `Role List Updated: ${role.id}`,
+        `Role Deleted: ${role.name}`,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null);
 });
