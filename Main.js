@@ -16,8 +16,8 @@ const CLIENT = BOT.getClient();
 
 const RECENT_USERS = new Set(); // For command cooldowns.
 const COMMAND_COOLDOWN = 1000; //  One second cooldown
-const COMMAND_COOLDOWN_ERROR_MESSAGE = "You have recently used a command, please try again later (cooldown per command is: " +
-    (COMMAND_COOLDOWN / 1000) + " seconds).";
+const COMMAND_COOLDOWN_ERROR_MESSAGE = `You have recently used a command, please try again later (cooldown per command is: 
+    ${(COMMAND_COOLDOWN / 1000)} seconds).`;
 
 const HEROKU_FAILED = "Heroku login failed!";
 const ATTEMPTING_LOCAL_LOGIN = "Attempting local login...\n";
@@ -40,16 +40,16 @@ CLIENT.on("debug", (bug) => { });
 
 CLIENT.on("error", (e) => { });
 
-CLIENT.on("guildCreate", (guild) => { });
+CLIENT.on("guildCreate", (guild) => {});
 
-CLIENT.on("guildMemberAdd", (member) => {
+CLIENT.on("guildMemberAdd", async (member) => {
     BOT.warn(`${member.user.username} just joined ${member.guild.name}!`);
-    member.send(`Welcome to ${member.guild.name}!`)
+    BOT.pm(member, `Welcome to ${member.guild.name}!`);
 });
 
-CLIENT.on("guildMemberRemove", (member) => {
+CLIENT.on("guildMemberRemove", async (member) => {
     BOT.warn(`${member.user.username} has been booted from ${member.guild.name}!`);
-    member.send(`You have left **${member.guild.name}**!`);
+    BOT.pm(member, `You have left **${member.guild.name}**!`);
 });
 
 CLIENT.on("message", async (message) => {
@@ -59,7 +59,7 @@ CLIENT.on("message", async (message) => {
 
         if (!messageContents.startsWith(BOT.getPrefix()))
             return;
-        if (isBot(oldMessage))
+        if (isBotMessage(message))
             return;
 
         message.channel.startTyping();
@@ -73,7 +73,6 @@ CLIENT.on("message", async (message) => {
             RECENT_USERS.delete(authorID);
         }, COMMAND_COOLDOWN);
 
-        //messageContents
         const args = messageContents.slice(BOT.getPrefix().length).trim().split(/ +/g);
         const command = args.shift().toLowerCase();
 
@@ -81,7 +80,7 @@ CLIENT.on("message", async (message) => {
             ADMIN.commands[command].execute(BOT, message, args);
     } catch (e) {
         console.trace();
-        B2.error(e);
+        BOT.error(e);
     } finally {
         logChat(message);
     }
@@ -99,26 +98,20 @@ CLIENT.on("warn", (notice) => {
     BOT.warn(notice);
 });
 
-function logChat(message) {
-    BOT.log(`${BOT.getExactMoment(new Date())} → ${message.author.username}: ${message.content}`);
-}
+CLIENT.on("voiceStateUpdate", async (oldState, newState) => {
+    let voiceStateTitleText;
 
-function isBot(message) {
-    return message.author.bot;
-}
-
-CLIENT.on("voiceStateUpdate", (oldState, newState) => {
     if (oldState.voiceChannel != newState.voiceChannel) {
         if (newState.voiceChannel) {
-
+            voiceStateTitleText = `<@${oldState.member.id}> joined <#${oldState.voiceChannel.id}>`
         } else {
             
         }
     }
 });
 
-CLIENT.on('messageDelete', async (message) => {
-    if (isBot(message))
+CLIENT.on("messageDelete", async (message) => {
+    if (isBotMessage(message))
         return;
 
     console.log(`Message: "${message.cleanContent}" was deleted from channel: ${message.channel.name} at ${new Date()}`);
@@ -140,7 +133,7 @@ CLIENT.on('messageDelete', async (message) => {
 });
 
 CLIENT.on('messageUpdate', async (oldMessage, newMessage) => {
-    if (isBot(oldMessage))
+    if (isBotMessage(oldMessage))
         return;
 
     BOT.createEmbedFromMessage(oldMessage,
@@ -221,3 +214,11 @@ CLIENT.on("roleDelete", function (role) {
         null,
         null);
 });
+
+function logChat(message) {
+    BOT.log(`${BOT.getExactMoment(new Date())} → ${message.author.username}: ${message.content}`);
+}
+
+function isBotMessage(message) {
+    return message.author.bot;
+}

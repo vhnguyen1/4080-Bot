@@ -18,7 +18,7 @@ const DEFAULT_EMBED_LINK = "https://discord.gg/wWxCsEP";
 "use strict";
 
 const Bot = (function () {
-    let instance; // The singleton instance of Bot. Only 1 may exist at a time.
+    let instance; // The modular singleton instance of Bot. Only 1 may exist at a time.
     let isLocal = true;
 
     try {
@@ -113,7 +113,7 @@ const Bot = (function () {
                 process.exit(0);
             },
             pm: function (member, message) {
-                member.send(message).catch(e => this.error(e));
+                member.send(message).catch(e => this.error(`Unable to pm ${member.user.name}: ${e}`));
             },
             isValidLink: function (url) {
                 return mURLValidater.isUri(url);
@@ -180,7 +180,6 @@ const Bot = (function () {
                 date.push(":");
                 date.push(addLeadingZero(currentDate.getSeconds()));
                 date.push(hoursSuffix);
-                //date.push(" PST");
                 return clearWhiteSpace(this.joinParameters(date));
             },
             getExactMoment: function (currentDate) {
