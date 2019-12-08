@@ -94,6 +94,10 @@ const Bot = (function () {
             busy: "dnd",
             invisible: "invisible",
             purple_hex: "#a504db",
+            ping: async function (message) {
+                const ping = await message.channel.send("Ping?");
+                ping.edit(`Pong!\nLatency is **~${ping.createdTimestamp - message.createdTimestamp}ms.** \nAPI Latency is **~${Math.round(mClient.ping)}ms.** `);
+            },
             debug: function (message) {
                 mLogger.debug(message).catch(e => message.channel.send(`${e}.`));
             },

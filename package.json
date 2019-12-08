@@ -4,8 +4,11 @@
   "description": "4080 Project",
   "main": "Main.js",
   "dependencies": {
+    "@mickaelftw/strawpolljs": "^1.0.0",
     "discord.js": "^11.5.1",
+    "superagent": "^5.1.2",
     "valid-url": "^1.0.9",
+    "weather-js": "^2.0.0",
     "winston": "^2.4.4"
   },
   "devDependencies": {},

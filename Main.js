@@ -10,6 +10,7 @@ const ASSETS_LOCATION = "./assets/";
 // Commands
 const DEFAULT_COMMAND_PATH = "./commands/";
 const ADMIN = require(`${DEFAULT_COMMAND_PATH}Admin.js`);
+const GENERAL = require(`${DEFAULT_COMMAND_PATH}General.js`);
 
 const BOT = require("./Bot.js").getInstance();
 const CLIENT = BOT.getClient();
@@ -21,35 +22,14 @@ const COMMAND_COOLDOWN_ERROR_MESSAGE = `You have recently used a command, please
 
 const HEROKU_FAILED = "Heroku login failed!";
 const ATTEMPTING_LOCAL_LOGIN = "Attempting local login...\n";
+const LOCAL_FAILED = "Local login failed!"
 
 "use strict";
 
 CLIENT.login(process.env.BOT_TOKEN).catch(e => {
     BOT.error(`${HEROKU_FAILED} - ${e}`);
     BOT.info(ATTEMPTING_LOCAL_LOGIN)
-    CLIENT.login(BOT.getToken()).catch(e => BOT.error(`Local login failed! ${e}`));
-});
-
-CLIENT.on("any", function (event) {
-    BOT.info(`Event occurred: ${event} (${BOT.getExactMoment(new Date())})`);
-});
-
-CLIENT.on("disconnect", (event) => { });
-
-CLIENT.on("debug", (bug) => { });
-
-CLIENT.on("error", (e) => { });
-
-CLIENT.on("guildCreate", (guild) => {});
-
-CLIENT.on("guildMemberAdd", async (member) => {
-    BOT.warn(`${member.user.username} just joined ${member.guild.name}!`);
-    BOT.pm(member, `Welcome to ${member.guild.name}!`);
-});
-
-CLIENT.on("guildMemberRemove", async (member) => {
-    BOT.warn(`${member.user.username} has been booted from ${member.guild.name}!`);
-    BOT.pm(member, `You have left **${member.guild.name}**!`);
+    CLIENT.login(BOT.getToken()).catch(e => BOT.error(`${LOCAL_FAILED} ${e}`));
 });
 
 CLIENT.on("message", async (message) => {
@@ -78,6 +58,8 @@ CLIENT.on("message", async (message) => {
 
         if (ADMIN.commands.hasOwnProperty(command))
             ADMIN.commands[command].execute(BOT, message, args);
+        else if (GENERAL.commands.hasOwnProperty(command))
+            GENERAL.commands[command].execute(BOT, message, args);
     } catch (e) {
         console.trace();
         BOT.error(e);
@@ -87,6 +69,16 @@ CLIENT.on("message", async (message) => {
 
 });
 
+CLIENT.on("guildMemberAdd", async (member) => {
+    BOT.warn(`${member.user.username} just joined ${member.guild.name}!`);
+    BOT.pm(member, `Welcome to ${member.guild.name}!`);
+});
+
+CLIENT.on("guildMemberRemove", async (member) => {
+    BOT.warn(`${member.user.username} has been booted from ${member.guild.name}!`);
+    BOT.pm(member, `You have left **${member.guild.name}**!`);
+});
+
 CLIENT.on("ready", () => {
     BOT.log("Starting up...");
     BOT.setActivity("with Node.js!");
@@ -94,19 +86,38 @@ CLIENT.on("ready", () => {
     BOT.log("Ready to go!\n");
 });
 
-CLIENT.on("warn", (notice) => {
-    BOT.warn(notice);
-});
-
 CLIENT.on("voiceStateUpdate", async (oldState, newState) => {
-    let voiceStateTitleText;
+    let voiceStateText;
+    var isValidStateUpdate = false;
 
-    if (oldState.voiceChannel != newState.voiceChannel) {
-        if (newState.voiceChannel) {
-            voiceStateTitleText = `<@${oldState.member.id}> joined <#${oldState.voiceChannel.id}>`
-        } else {
-            
-        }
+    if (!oldState.voiceChannel) {
+        isValidStateUpdate = true;
+        voiceStateText = `<@${oldState.user.id}> joined ${newState.voiceChannel.name}`;
+    } else if (oldState.voiceChannel != newState.voiceChannel) {
+        isValidStateUpdate = true;
+        voiceStateText = `<@${oldState.user.id}> left ${oldState.voiceChannel.name}`;
+
+        if (newState.voiceChannel)
+            voiceStateText += ` and joined ${newState.voiceChannel.name}`
+    } else if (oldState.selfMute != newState.selfMute) {
+        isValidStateUpdate = true;
+        voiceStateText = `<@${newState.user.id}> is ${((newState.selfMute) ? " was muted in " : " was unmuted in")} ${newState.voiceChannel.name}`;
+    }
+
+    if (isValidStateUpdate) {
+        BOT.createEmbedFromMessage(oldState,
+            BOT.getLogChannel(),
+            null,
+            `Voice State Updated: ${oldState.user.id}`,
+            null,
+            null,
+            null,
+            voiceStateText,
+            null,
+            null,
+            null,
+            null,
+            null);
     }
 });
 
