@@ -31,9 +31,6 @@ const URBAN_DICTIONARY_UNSUCCESSFUL = "no_results";
 const URBAN_DICTIONARY_ICON = "https://i.imgur.com/1uavPhx.jpg";
 
 const SEARCH_SUCCESS_CODE = 200;
-const DEFAULT_SEARCH_LIMIT = 1;
-const DEFAULT_SEARCH_CAP = 10;
-const DEFAULT_CAP_MESSAGE = "Sorry, the limit for searching is capped at " + DEFAULT_SEARCH_CAP + ".";
 const DEFAULT_NO_RESPONSE = "No response from the server. Please make sure you're searching something valid!";
 
 const COMMANDS = {
@@ -60,35 +57,6 @@ const COMMANDS = {
                         //bot.info("New strawpoll - " + poll.title + " has been created by " + message.author.username + ".");
                     });
             }).catch(e => message.channel.send(`${e}. `));
-        }
-    },
-    "mpoll": {
-        permissions: [],
-        description: "Creates a user-specified strawpoll that allows multiple-selections.",
-        execute: function (bot, message, args) {
-            const pollText = bot.joinParameters(args);
-            if (args.length < POLL_MINIMUM || !hasValidPollParameters(pollText))
-                return message.reply(POLL_PARAMETER_ERROR);
-
-            const userPoll = intializePoll(bot, pollText, true, false);
-            userPoll.createPoll().then((poll) => {
-                getPollInfo(bot, message, userPoll, true);
-                poll.getVotes()
-                    .then((poll) => {
-                        //bot.info("New multi-choice strawpoll - " + poll.title + " has been created by " + message.author.username + ".");
-                    });
-            }).catch(e => message.channel.send(`${e}. `));
-        }
-    },
-    "rpoll": {
-        permissions: [],
-        description: "Reads in an existing strawpoll and displays it's information.",
-        execute: function (bot, message, args) {
-            const existingPoll = new STRAWPOLL();
-            const pollID = parseInt(args[0].replace(STRAWPOLL_PREFIX, ""));
-
-            setPollID(existingPoll, pollID);
-            getPollInfo(bot, message, existingPoll, false);
         }
     },
     "weather": {
